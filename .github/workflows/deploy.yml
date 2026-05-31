@@ -32,8 +32,8 @@ jobs:
 
       - name: Build Wasm
         run: |
+          chmod -R +x liblouis-3.37.0
           cd liblouis-3.37.0
-          chmod +x configure
           emconfigure ./configure --disable-shared --enable-static --without-yaml
           emmake make -j$(nproc)
           cd ..
