@@ -1,0 +1,4 @@
+@set UPDATED 2 March 2026
+@set UPDATED-MONTH March 2026
+@set EDITION 3.37.0
+@set VERSION 3.37.0

@@ -1,0 +1,36 @@
+Liblouis Web Translation - Local Testing Procedure
+==================================================
+
+Because this application uses WebAssembly (Wasm), you cannot simply open 'index.html' by double-clicking it. Browsers block Wasm files from the local file system for security reasons.
+
+Follow these steps to run the application on your computer:
+
+1. OPEN TERMINAL:
+   Open a terminal (PowerShell or Command Prompt) in this folder (C:\salo\louis_brl).
+
+2. START A LOCAL SERVER:
+   Run the following command:
+   python -m http.server 8000
+
+3. OPEN YOUR BROWSER:
+   Go to the following address:
+   http://localhost:8000
+
+4. CARRY OUT THE TEST:
+   - Paste the test text below into the text area.
+   - Select the corresponding table from the dropdown.
+   - Observe the live Braille translation.
+
+TEST CASES:
+-----------
+* English (US Grade 2): Knowledge is power.
+* Spanish (Grade 2): Hola mundo, ¿cómo estás?
+* Hebrew: שלום עולם
+* Arabic: مرحبا بالعالم
+* Hindi: नमस्ते दुनिया
+* Tamil: வணக்கம் உலகம்
+* Nemeth: x = (-b ± √(b² - 4ac)) / 2a
+
+5. VERIFY DOWNLOADS:
+   - Click "Download as Unicode Braille" and ensure a .txt file is saved.
+   - Click "Download as Braille Ready Format" and ensure a .brf file is saved.

@@ -1,0 +1,73 @@
+name: Deploy Liblouis Wasm to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 'latest'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Prepare Tables
+        run: python prepare-tables.py
+
+      - name: Build Wasm
+        run: |
+          cd liblouis-3.37.0
+          emconfigure ./configure --disable-shared --enable-static --without-yaml
+          emmake make -j$(nproc)
+          cd ..
+          mkdir -p dist
+          emcc -O3 \
+            liblouis-3.37.0/liblouis/.libs/liblouis.a \
+            liblouis-3.37.0/gnulib/.libs/libgnu.a \
+            -o dist/liblouis.js \
+            -s EXPORTED_FUNCTIONS='["_lou_version", "_lou_translateString", "_lou_setDataPath", "_lou_free", "_malloc"]' \
+            -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap", "allocate", "stringToUTF16", "UTF16ToString", "ALLOC_NORMAL", "getValue", "setValue"]' \
+            -s MODULARIZE=1 \
+            -s EXPORT_NAME='Liblouis' \
+            -s ALLOW_MEMORY_GROWTH=1 \
+            --preload-file wasm/tables@/tables \
+            -Iliblouis-3.37.0 -Iliblouis-3.37.0/liblouis
+
+      - name: Prepare Upload
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          mkdir -p _site/dist
+          cp dist/liblouis.js _site/dist/
+          cp dist/liblouis.wasm _site/dist/
+          cp dist/liblouis.data _site/dist/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,2 @@
+you are a great c programming expert and braille translation expert and help and support GitHub page deploymentIn this project we are going to compile the c code in the liblouis folder to deploy it as a web page.
+so observe the project folder and subfolders to verify the possibility and feasibility. if possible make gemini.md with stage by stage plan.
