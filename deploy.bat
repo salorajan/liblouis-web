@@ -29,21 +29,28 @@ if /i "%confirm_commit%"=="y" (
 )
 
 :: Step 4: Remote Configuration
-set /p confirm_remote="Configure remote repository? (y/n): "
-if /i "%confirm_remote%"=="y" (
-    set /p repo_url="Enter GitHub repository URL (e.g., https://github.com/salorajan/liblouis-web.git): "
-    git remote remove origin >nul 2>&1
-    git remote add origin !repo_url!
-    echo Remote origin set to !repo_url!
+:remote_config
+set /p repo_url="Enter GitHub repository URL (e.g., https://github.com/salorajan/liblouis-web.git): "
+if "!repo_url!"=="" (
+    echo Error: URL cannot be empty.
+    goto remote_config
 )
+git remote remove origin >nul 2>&1
+git remote add origin !repo_url!
+echo Remote origin set to !repo_url!
 
 :: Step 5: Push
-set /p confirm_push="Push to GitHub? (y/n): "
+:: Detect current branch name
+for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set current_branch=%%i
+set /p confirm_push="Push to GitHub branch '!current_branch!'? (y/n): "
 if /i "%confirm_push%"=="y" (
-    set /p branch_name="Enter branch name (default: main): "
-    if "!branch_name!"=="" set branch_name=main
-    git push -u origin !branch_name!
-    echo Pushed to GitHub.
+    git push -u origin !current_branch!
+    if !errorlevel! neq 0 (
+        echo.
+        echo Error: Push failed. Check your internet or if the repository exists on GitHub.
+    ) else (
+        echo Pushed to GitHub.
+    )
 )
 
 echo.
