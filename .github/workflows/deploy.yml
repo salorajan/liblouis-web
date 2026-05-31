@@ -34,6 +34,8 @@ jobs:
         run: |
           chmod -R +x liblouis-3.37.0
           cd liblouis-3.37.0
+          # Prevent autotools rebuilds due to timestamp issues
+          touch aclocal.m4 configure Makefile.in liblouis/config.h.in
           emconfigure ./configure --disable-shared --enable-static --without-yaml
           emmake make -j$(nproc)
           cd ..
